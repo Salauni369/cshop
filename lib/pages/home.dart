@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:cshop/util/coffee_type.dart';
 import 'package:cshop/util/coffee_tile.dart';
 import 'package:cshop/pages/setting_screen.dart';
 import 'package:cshop/pages/profile.dart';
 import 'package:cshop/pages/logout.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -23,6 +23,24 @@ class _HomePageState extends State<HomePage> {
     ["Cappucino", false],
   ];
 
+  // Coffee list
+  final List<Map<String, String>> coffees = [
+    {
+      "name": "Cold Coffee",
+      "image": "assets/images/cf1.png",
+      "description": "Coffe with a fellow forwerd creemy and icce. very luraage buy one two free",
+      "price": "4.50"
+    },
+    {"name": "Latte", "image": "assets/images/hc2.png", "description": "With almond milk.", "price": "3.20"},
+    {"name": "Espresso", "image": "assets/images/hc3.png", "description": "Strong & rich.", "price": "2.90"},
+    {"name": "Cappuccino", "image": "assets/images/hc4.png", "description": "Creamy delight.", "price": "3.70"},
+    {"name": "Dark Coffee", "image": "assets/images/cf4.png", "description": "Rich desserts like chocolate cake or tiramisu", "price": "3.70"},
+    {"name": "Ice Coffee", "image": "assets/images/cf2.png", "description": "Creamy delight.", "price": "3.70"},
+  ];
+
+  TextEditingController searchController = TextEditingController();
+  String searchText = "";
+
   void coffeeTypeSelected(int index) {
     setState(() {
       for (int i = 0; i < coffeeTypes.length; i++) {
@@ -34,18 +52,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Filtered coffee list based on search text
+    List<Map<String, String>> displayedCoffees = coffees
+        .where((coffee) => coffee['name']!.toLowerCase().contains(searchText.toLowerCase()))
+        .toList();
+
     return Scaffold(
-      // AppBar
       appBar: AppBar(
         elevation: 5,
         backgroundColor: Colors.black,
-        //leading: const Icon(Icons.menu, color: Colors.white),
         actions: const [
           Padding(padding: EdgeInsets.only(right: 25.0)),
           Icon(Icons.person, color: Colors.white),
         ],
       ),
-
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -61,30 +81,29 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.black,
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Search icon only for ui not working
-              // working on it next time kahe ke abhi abhi nye aaye hn
-              const TextField(
+              // Working search bar
+              TextField(
+                controller: searchController,
                 decoration: InputDecoration(
-
-                  prefixIcon: Icon(Icons.search, color: Colors.white),
+                  prefixIcon: const Icon(Icons.search, color: Colors.white),
                   hintText: "Find your Coffee...",
-                  hintStyle: TextStyle(color: Colors.white),
+                  hintStyle: const TextStyle(color: Colors.white),
                   filled: true,
                   fillColor: Colors.black,
-                  border: OutlineInputBorder(
+                  border: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(12)),
                     borderSide: BorderSide.none,
                   ),
                 ),
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value;
+                  });
+                },
               ),
-
               const SizedBox(height: 20),
-
               // Horizontal coffee types
-
               SizedBox(
                 height: 40,
                 child: ListView.builder(
@@ -99,74 +118,43 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ),
-
               const SizedBox(height: 18),
-
-              // Coffee tiles (horizontal cards)
+              // Responsive Coffee Tiles
               Expanded(
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 9,
-                  childAspectRatio: 0.9,
+                child: LayoutBuilder(builder: (context, constraints) {
+                  int crossAxisCount = constraints.maxWidth > 600 ? 3 : 2;
+                  double childAspectRatio = constraints.maxWidth > 600 ? 1.2 : 0.9;
 
-                  scrollDirection: Axis.vertical,
-
-                  children: const [
-                    CoffeeTile(
-                      coffeeName: "Cold Coffee",
-                      coffeeImagePath: "assets/images/cf1.png",
-                      description: "Coffe with a fellow forwerd creemy and icce. very luraage buy one two free",
-                      price: "4.50",
+                  return GridView.builder(
+                    itemCount: displayedCoffees.length,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 9,
+                      childAspectRatio: childAspectRatio,
                     ),
-                    CoffeeTile(
-                      coffeeName: "Latte",
-                      coffeeImagePath: "assets/images/hc2.png",
-                      description: "With almond milk.",
-                      price: "3.20",
-                    ),
-                    CoffeeTile(
-                      coffeeName: "Espresso",
-                      coffeeImagePath: "assets/images/hc3.png",
-                      description: "Strong & rich.",
-                      price: "2.90",
-                    ),
-                    CoffeeTile(
-                      coffeeName: "Cappuccino",
-                      coffeeImagePath: "assets/images/hc4.png",
-                      description: "Creamy delight.",
-                      price: "3.70",
-                    ),
-
-
-                    CoffeeTile(
-                      coffeeName: "Dark Coffee",
-                      coffeeImagePath: "assets/images/cf4.png",
-                      description: "Rich desserts like chocolate cake or tiramisu",
-                      price: "3.70",
-                    ),
-                    CoffeeTile(
-                      coffeeName: "Ice Coffee",
-                      coffeeImagePath: "assets/images/cf2.png",
-                      description: "Creamy delight.",
-                      price: "3.70",
-                    ),
-                  ],
-
-                ),
+                    itemBuilder: (context, index) {
+                      var coffee = displayedCoffees[index];
+                      return CoffeeTile(
+                        coffeeName: coffee['name']!,
+                        coffeeImagePath: coffee['image']!,
+                        description: coffee['description']!,
+                        price: coffee['price']!,
+                      );
+                    },
+                  );
+                }),
               ),
             ],
           ),
         ),
       ),
-
-
       bottomNavigationBar: BottomNavigationBar(
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home,color: Colors.black,), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite,color: Colors.black,), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications,color: Colors.black,), label: ""),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart,color: Colors.black,),label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.home, color: Colors.black), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite, color: Colors.black), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications, color: Colors.black), label: ""),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart, color: Colors.black), label: ""),
         ],
       ),
       drawer: Drawer(
@@ -174,73 +162,54 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.black,
-              ),
+              decoration: BoxDecoration(color: Colors.black),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Coffee Shop",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 8),
                   Text(
                     "Welcome, 14ry sahab ",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ],
               ),
             ),
-
-
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text("Home"),
+              leading: const Icon(Icons.home),
+              title: const Text("Home"),
               onTap: () {
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Settings"),
+              leading: const Icon(Icons.settings),
+              title: const Text("Settings"),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> const SettingsPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsPage()));
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => LogoutPage()));
               },
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Profile"),
+              leading: const Icon(Icons.person),
+              title: const Text("Profile"),
               onTap: () {
-
-                Navigator.push(context,MaterialPageRoute(builder: (context)=>ProfilePage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
               },
             ),
           ],
         ),
       ),
-
     );
   }
 }
-
-
-
-
-
-
