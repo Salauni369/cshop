@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'login_page.dart';
 import 'dart:async';
 
@@ -29,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children:  [
-            Expanded(child: Lottie.asset('assets/animation/cfani.json')),
+            Expanded(child: Image.asset('assets/images/hc4.png', fit: BoxFit.contain)),
             SizedBox(height: 20),
             Text(
               "Coffee Shop",
@@ -42,4 +41,5 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+
 

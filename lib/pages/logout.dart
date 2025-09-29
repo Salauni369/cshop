@@ -1,4 +1,5 @@
-import 'dart:io';
+import 'package:provider/provider.dart';
+import 'package:cshop/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 
 class LogoutPage extends StatelessWidget {
@@ -73,7 +74,7 @@ class LogoutPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        exit(0);
+                        context.read<AuthProvider>().logout(); Navigator.pop(context);
                       },
                       child: const Text("Logout",style: TextStyle(color: Colors.white),),
                     ),
@@ -87,3 +88,6 @@ class LogoutPage extends StatelessWidget {
     );
   }
 }
+
+
+

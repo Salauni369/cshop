@@ -1,3 +1,5 @@
+import 'package:provider/provider.dart';
+import 'package:cshop/providers/auth_provider.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'home.dart';
@@ -14,21 +16,31 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void signUp() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Account created successfully!"),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ),
-    );
-
-    Future.delayed(const Duration(seconds: 2), () {
+  Future<void> signUp() async {
+    final auth = context.read<AuthProvider>();
+    final ok = await auth.signup(nameController.text, emailController.text, passwordController.text);
+    if (!ok) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(auth.error ?? 'Signup failed')),
+        );
+      }
+      return;
+    }
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully!'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      await Future.delayed(const Duration(seconds: 1));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
-    });
+    }
   }
 
   @override
@@ -36,15 +48,12 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
           Positioned.fill(
             child: Image.asset(
-              "assets/images/hc4.png",
+              'assets/images/hc4.png',
               fit: BoxFit.cover,
             ),
           ),
-
-          // Blur Effect
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
@@ -53,8 +62,6 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
             ),
           ),
-
-
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(25),
@@ -69,7 +76,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
-                      "Create Account",
+                      'Create Account',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 28,
@@ -77,42 +84,25 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-
-
-
                     TextField(
                       controller: nameController,
                       style: const TextStyle(color: Colors.white),
-                      decoration: _inputDecoration("Full Name"),
+                      decoration: _inputDecoration('Full Name'),
                     ),
                     const SizedBox(height: 15),
-
-
-
-
-
                     TextField(
                       controller: emailController,
                       style: const TextStyle(color: Colors.white),
-                      decoration: _inputDecoration("Email"),
+                      decoration: _inputDecoration('Email'),
                     ),
                     const SizedBox(height: 15),
-
-
-
-
                     TextField(
                       controller: passwordController,
                       obscureText: true,
                       style: const TextStyle(color: Colors.white),
-                      decoration: _inputDecoration("Password"),
+                      decoration: _inputDecoration('Password'),
                     ),
-
                     const SizedBox(height: 20),
-
-
-
                     ElevatedButton(
                       onPressed: signUp,
                       style: ElevatedButton.styleFrom(
@@ -120,33 +110,22 @@ class _SignUpPageState extends State<SignUpPage> {
                         foregroundColor: Colors.black,
                         minimumSize: const Size(double.infinity, 50),
                       ),
-                      child: const Text("Sign Up"),
+                      child: const Text('Sign Up'),
                     ),
-
                     const SizedBox(height: 20),
-                    const Text("Or continue with",
-                        style: TextStyle(color: Colors.grey)),
-
+                    const Text('Or continue with', style: TextStyle(color: Colors.grey)),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Google
                         IconButton(
-                          onPressed: () {
-                            // Google signup logic
-                          },
-                          icon: Image.asset("assets/images/google.png", width: 40),
+                          onPressed: () {},
+                          icon: Image.asset('assets/images/google.png', width: 40),
                         ),
                         const SizedBox(width: 20),
-
-
                         IconButton(
-                          onPressed: () {
-
-
-                          },
-                          icon: Image.asset("assets/images/facebook.png", width: 40),
+                          onPressed: () {},
+                          icon: Image.asset('assets/images/facebook.png', width: 40),
                         ),
                       ],
                     )

@@ -1,7 +1,7 @@
-
-
 import 'package:flutter/material.dart';
+
 class CoffeeTile extends StatelessWidget {
+  final VoidCallback? onAdd;
   final String coffeeName;
   final String coffeeImagePath;
   final String description;
@@ -13,6 +13,7 @@ class CoffeeTile extends StatelessWidget {
     required this.coffeeImagePath,
     required this.description,
     required this.price,
+    this.onAdd,
   });
 
   @override
@@ -20,7 +21,7 @@ class CoffeeTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 15.0),
       child: Container(
-        width: 100, // width increase ki
+        width: 100,
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: const Color(0xFF1E1E1E),
@@ -30,12 +31,12 @@ class CoffeeTile extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              height: 60, // image height increase ki
+              height: 60,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 image: DecorationImage(
                   image: AssetImage(coffeeImagePath),
-                  fit: BoxFit.cover, // image properly fill kare container
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -44,20 +45,33 @@ class CoffeeTile extends StatelessWidget {
               coffeeName,
               maxLines: 1,
               style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             Text(
               description,
               maxLines: 1,
               style: const TextStyle(color: Colors.grey, fontSize: 14),
             ),
-            const SizedBox(height: 3 ),
-            Text(
-              "\$${price}",
-              style: const TextStyle(
-                  color: Colors.orange, fontSize: 16, fontWeight: FontWeight.bold),
+            const SizedBox(height: 6),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: onAdd,
+                  child: const Text('Add to Cart'),
+                ),
+                Text(
+                  '\$' + price,
+                  style: const TextStyle(
+                    color: Colors.orange,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -65,4 +79,3 @@ class CoffeeTile extends StatelessWidget {
     );
   }
 }
-
